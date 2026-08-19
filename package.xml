@@ -25,8 +25,30 @@
   <depend>tf2_geometry_msgs</depend>
   <depend>geometry_msgs</depend>
   <depend>angles</depend>
-  <!-- <depend>cv_bridge</depend>
-  <depend>K4A</depend> -->
+  <!-- REQUIRED. CMakeLists.txt does find_package(cv_bridge REQUIRED) and
+       k4a_ros_device.cpp includes the cv_bridge header, so a machine without
+       it fails at configure time. It was commented out together with K4A
+       below, but unlike K4A it is a real rosdep key, so hiding it from rosdep
+       does not avoid a problem. It only moves the failure later. -->
+  <depend>cv_bridge</depend>
+
+  <!-- The Azure Kinect Sensor SDK is DELIBERATELY not declared here.
+
+       "K4A" is not a rosdep key. No rosdep rule resolves it, so declaring it
+       makes `rosdep install` fail outright with "Cannot locate rosdep
+       definition for [K4A]" on every machine, whether or not the SDK is
+       present. That is why this was commented out, and it should stay that
+       way until someone adds a local rosdep source mapping it to
+       libk4a1.4-dev.
+
+       Until then the dependency is real but invisible to rosdep, which is the
+       worst kind, so it is checked explicitly instead: the hardware layer of
+       tari.bash tests for libk4a with ldconfig and stops with the Microsoft
+       repository instructions rather than letting the build fail inside
+       find_package(k4a).
+
+       <depend>K4A</depend>
+    -->
 
   <export>
     <build_type>ament_cmake</build_type>
